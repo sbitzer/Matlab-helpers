@@ -59,7 +59,14 @@
 %                   each point in points1
 %        .points2 - as above
 %           ...
-function vis = plotPoints(meth,varargin)
+%   handlenames -   cell string
+%                   names of fields that have been added to vis containing
+%                   the handles of the plotted points, this is returned, 
+%                   because, if there were already points in the figure, it
+%                   is otherwise not easy to know which are the handles
+%                   that have just been added (e.g. vis.points4)
+%                   [1,number of point data sets] = size
+function [vis,handlenames] = plotPoints(meth,varargin)
 
 nvarin = nargin-1;
 
@@ -92,6 +99,11 @@ if ~isempty(pind)
     end
 end
 
+handlenames = cell(1,nsets);
+for i = 1:nsets
+    handlenames{i} = sprintf('points%d',i+poff);
+end
+
 switch meth
     case 1 % points from one array together
         for i = 1:nsets
@@ -101,10 +113,10 @@ switch meth
             
             nd = size(points,2);
             if nd==3
-                vis.(sprintf('points%d',i+poff)) = ...
+                vis.(handlenames{i}) = ...
                     plot3(points(:,1),points(:,2),points(:,3),'.','Color',cols(1,:));
             elseif nd==2
-                vis.(sprintf('points%d',i+poff)) = ...
+                vis.(handlenames{i}) = ...
                     plot(points(:,1),points(:,2),'.','Color',cols(1,:));
             else
                 error('Only 2 or 3 dimensions supported!')
@@ -117,13 +129,13 @@ switch meth
             cols = varargin{2*(i-1)+2};
             cols = expandColours(cols,npoints);
             
-            vis.(sprintf('points%d',i+poff)) = nan(npoints,1);
+            vis.(handlenames{i}) = nan(npoints,1);
             for p = 1:npoints
                 if nd==3
-                    vis.(sprintf('points%d',i+poff))(p) = ...
+                    vis.(handlenames{i})(p) = ...
                         plot3(points(p,1),points(p,2),points(p,3),'.','Color',cols(p,:));
                 elseif nd==2
-                    vis.(sprintf('points%d',i+poff))(p) = ...
+                    vis.(handlenames{i})(p) = ...
                         plot(points(p,1),points(p,2),'.','Color',cols(p,:));
                 else
                     error('Only 2 or 3 dimensions supported!')
@@ -138,10 +150,10 @@ switch meth
             
             nd = size(points,2);
             if nd==3
-                vis.(sprintf('points%d',i+poff)) = ...
+                vis.(handlenames{i}) = ...
                     scatter3(points(:,1),points(:,2),points(:,3),30,cols,'.');
             elseif nd==2
-                vis.(sprintf('points%d',i+poff)) = ...
+                vis.(handlenames{i}) = ...
                     scatter(points(:,1),points(:,2),30,cols,'.');
             else
                 error('Only 2 or 3 dimensions supported!')
