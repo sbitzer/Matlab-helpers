@@ -25,7 +25,9 @@
 %                   to points which are then in position given by
 %                   Points(:,:,end)
 %       hname   -   cell string containing name of field added to vis
-function [vis,hname] = playPoints(Points,options,vis)
+%       Mov     -   Matlab movie, if this output argument is requested, the
+%                   animated dots are captured in a Matlab movie
+function [vis,hname,Mov] = playPoints(Points,options,vis)
 
 nd = size(Points,2);
 if nd<3
@@ -68,9 +70,16 @@ if isnonemptyfield(options,'view')
     view(options.view)
 end
 
+if nargout>2
+    Mov = struct('cdata',{},'colormap',{});
+end
 for i = 1:size(Points,3)
     set(vis.(hname{1}),'XData',Points(:,1,i),...
                          'YData',Points(:,2,i),...
                          'ZData',Points(:,3,i))
-    pause(flength)
+    if nargout>2
+        Mov(i) = getframe(gcf);
+    else
+        pause(flength)
+    end
 end
