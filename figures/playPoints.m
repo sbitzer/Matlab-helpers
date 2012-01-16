@@ -58,6 +58,7 @@ else
 end
 
 minmax = [min(min(Points,[],3))', max(max(Points,[],3))'];
+minmax(:,2) = minmax(:,2) + 1e-10;  % to prevent errors for nd<3
 xlim(minmax(1,:))
 ylim(minmax(2,:))
 zlim(minmax(3,:))
