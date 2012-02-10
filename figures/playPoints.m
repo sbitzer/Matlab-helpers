@@ -57,7 +57,12 @@ else
     [vis,hname] = plotPoints(1,Points(:,:,1),col,vis);
 end
 
-minmax = [min(min(Points,[],3))', max(max(Points,[],3))'];
+if isnonemptyfield(options,'pointOptions')
+    format.(hname{1}) = options.pointOptions;
+    applyFormat2Fig(vis,format)
+end
+
+minmax = [min(min(Points,[],3),[],1)', max(max(Points,[],3),[],1)'];
 minmax(:,2) = minmax(:,2) + 1e-10;  % to prevent errors for nd<3
 xlim(minmax(1,:))
 ylim(minmax(2,:))
