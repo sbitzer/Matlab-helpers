@@ -17,6 +17,9 @@
 %                   [default: nothing done]
 %           .view - (3D) view that figure is changed to
 %                   [default: nothing done]
+%   .pointOptions - structure with formatting instructions for all points
+%                   field names are property names and field values the
+%                   corresponding values (cf. applyFormat2Fig.m)
 %       vis     -   visualisation structure containing handles to existing
 %                   objects in plot
 %                   [default: []]
