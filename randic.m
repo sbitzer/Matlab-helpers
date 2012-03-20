@@ -49,10 +49,9 @@ while unsuccessfull
         unsuccessfull = false;
     catch err
         if strcmp(err.identifier,'MATLAB:RandStream:randi:invalidLimits')
-            % this happens when no admissible conditions are left to choose,
-            % because the last 3 conditions belong to either the same task or
-            % same semi-tone step size, but the other two conditions cannot be
-            % chosen because all of their blocks have already been used
+            % this happens when the constraints have removed all integers
+            % from the pool (e.g., the only integer left according to
+            % counts is "2", but "2" was already chosen in previous step)
             warning('helpers:restart','Ran in a gridlock when generating pseudorandom integers, restart.')
         else
             rethrow(err)
