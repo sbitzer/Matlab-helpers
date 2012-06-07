@@ -38,8 +38,8 @@ if iscell(data)
     nt = numel(mu);
 else
     [ndps,nt] = size(data);
-    mu = mean(data);
-    stdev = std(data);
+    mu = mean(data,1);
+    stdev = std(data,[],1);
 end
 
 if nargin<2 || isempty(xx)
@@ -70,11 +70,15 @@ vis.(hnamemean)(end+1) = plot(xx,mu,'k');
 hold on
 if ndps>1
     vis.(hnamestd)(end+1) = fill(X,Y,[.9 .9 .9],'LineStyle','none','EdgeColor',[.7 .7 .7]);
+    shaded = true;
 else
-    warning('Only plotting one trial.')
+    warning('matlabHelpers:singleTrial','Only plotting one trial.')
     vis.(hnamestd)(end+1) = [];
+    shaded = false;
 end
 
 % make sure the shading is in background
-handles = get(gca,'Children');
-set(gca,'Children',[handles(2:end);handles(1)]);
+if shaded
+    handles = get(gca,'Children');
+    set(gca,'Children',handles([2,3:end,1]));
+end

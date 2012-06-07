@@ -17,6 +17,9 @@
 %                   [default: nothing done]
 %           .view - (3D) view that figure is changed to
 %                   [default: nothing done]
+%   .pointOptions - structure with formatting instructions for all points
+%                   field names are property names and field values the
+%                   corresponding values (cf. applyFormat2Fig.m)
 %       vis     -   visualisation structure containing handles to existing
 %                   objects in plot
 %                   [default: []]
@@ -25,7 +28,9 @@
 %                   to points which are then in position given by
 %                   Points(:,:,end)
 %       hname   -   cell string containing name of field added to vis
-function [vis,hname] = playPoints(Points,options,vis)
+%       Mov     -   Matlab movie, if this output argument is requested, the
+%                   animated dots are captured in a Matlab movie
+function [vis,hname,Mov] = playPoints(Points,options,vis)
 
 nd = size(Points,2);
 if nd<3
@@ -55,10 +60,28 @@ else
     [vis,hname] = plotPoints(1,Points(:,:,1),col,vis);
 end
 
-minmax = [min(min(Points,[],3))', max(max(Points,[],3))'];
-xlim(minmax(1,:))
-ylim(minmax(2,:))
-zlim(minmax(3,:))
+if isnonemptyfield(options,'pointOptions')
+    format.(hname{1}) = options.pointOptions;
+    applyFormat2Fig(vis,format)
+end
+
+minmax = [min(min(Points,[],3),[],1)', max(max(Points,[],3),[],1)'];
+minmax(:,2) = minmax(:,2) + 1e-10;  % to prevent errors for nd<3
+if isnonemptyfield(options,'xlim')
+    xlim(options.xlim)
+else
+    xlim(minmax(1,:))
+end
+if isnonemptyfield(options,'ylim')
+    ylim(options.ylim)
+else
+    ylim(minmax(2,:))
+end
+if isnonemptyfield(options,'zlim')
+    zlim(options.zlim)
+else
+    zlim(minmax(3,:))
+end
 
 if isnonemptyfield(options,'DataAspectRatio')
     set(gca,'DataAspectRatio',options.DataAspectRatio)
@@ -68,9 +91,16 @@ if isnonemptyfield(options,'view')
     view(options.view)
 end
 
+if nargout>2
+    Mov = struct('cdata',{},'colormap',{});
+end
 for i = 1:size(Points,3)
     set(vis.(hname{1}),'XData',Points(:,1,i),...
                          'YData',Points(:,2,i),...
                          'ZData',Points(:,3,i))
-    pause(flength)
+    if nargout>2
+        Mov(i) = getframe(gcf);
+    else
+        pause(flength)
+    end
 end
