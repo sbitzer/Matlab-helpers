@@ -14,14 +14,20 @@
 % over model p(m) is uniform.
 % 
 % in:
-%       logp    -   a vector of log-probabilities
+%       logp    -   a vector or matrix of log-probabilities, if it is a
+%                   vector, it can be any dimension which contains the data
+%                   for a matrix it is assumed that data is in 1st dim, ie.
+%                   [nx, N] = size, where nx is number of variables to
+%                   normalise over and N is the number of distributions to
+%                   normalise
 % out: 
-%       p       -   the vector of normalised probabilities
+%       p       -   the vector or matrix of normalised probabilities
+%                   [nx, N] = size
 % author:
 %       Sebastian Bitzer
 function p = normaliselogprob(logp)
 
 mlogp = max(logp);
-logsum = mlogp + log( sum( exp(logp - mlogp) ) );
+logsum = bsxfun( @plus, mlogp, log( sum( exp( bsxfun(@minus, logp, mlogp) ) ) ) );
 
-p = exp( logp - logsum );
+p = exp( bsxfun( @minus, logp, logsum ) );
