@@ -36,7 +36,6 @@ k = size(X,2);
 if nargin < 5 || isempty(Cdet)
     Cdet = det(C);
 end
-Z = (2*pi)^(k/2) * sqrt(Cdet);
 
 Xmudiff = bsxfun(@minus, X, mu);
 
@@ -47,7 +46,18 @@ else
 end
 
 if logdens
-    Y = -log(Z) - .5 * sum(XmuCinv .* Xmudiff, 2);
+    % assuming that C is a proper positive definite covariance matrix, this
+    % may happen when there are a lot of small eigenvectors whose product
+    % is 0 because the small size cannot be represented numerically, in
+    % this case compute the eigenvectors explicitly and sum their logs
+    if Cdet == 0
+        E = eig(C);
+        logCdet = sum(log(E));
+    else
+        logCdet = log(Cdet);
+    end
+    Y = -k/2*log(2*pi) - logCdet/2 - .5 * sum(XmuCinv .* Xmudiff, 2);
 else
+    Z = (2*pi)^(k/2) * sqrt(Cdet);
     Y = exp(-.5 * sum(XmuCinv .* Xmudiff, 2)) / Z;
 end
