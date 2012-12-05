@@ -3,8 +3,8 @@
 % plots the mean of given sequential data and a shaded region around it 
 % which corresponds to 2*standard deviation
 % 
-% also supports that mean and standard deviation are directly provided, see
-% description of argument 'data'
+% also supports that mean and standard deviation or confidence intervals 
+% are directly provided, see description of argument 'data'
 % 
 % in:
 %       data    -   either: a matrix containing sequential data, 
@@ -16,6 +16,13 @@
 %                       contains the means and the second the standard
 %                       deviations for all time points
 %                       [1,nt] = size(data{i})
+%                   or: a cell array with two cells of which the first
+%                       contains the means and the second confidence 
+%                       intervals for all time points, difference to above
+%                       is that the confidence intervals provide an upper
+%                       and lower bound which might differ
+%                       [1,nt] = size(data{1})
+%                       [2,nt] = size(data{2})
 %       xx      -   x-positions of data points
 %                   [nt,1] = size, [default: (1:nt)']
 %       vis     -   visualisation structure containing handles to
@@ -31,11 +38,17 @@
 %      .hnamemean - line representing the mean of data
 function vis = plotMeanWithStd(data, xx, vis, hnamemean, hnamestd)
 
+confints = 0;
+
 if iscell(data)
     mu = data{1};
     stdev = data{2};
     ndps = Inf;
     nt = numel(mu);
+    
+    if size(stdev, 1) == 2
+        confints = 1;
+    end
 else
     [ndps,nt] = size(data);
     mu = mean(data,1);
@@ -65,7 +78,11 @@ if ~isfield(vis,hnamemean) || ~isfield(vis,hnamestd)
 end
 
 X = [xx;xx(end:-1:1)];
-Y = [mu+2*stdev, mu(end:-1:1)-2*stdev(end:-1:1)]';
+if confints
+    Y = [mu + stdev(1,:), mu(end:-1:1) - stdev(2, end:-1:1)]';
+else
+    Y = [mu+2*stdev, mu(end:-1:1)-2*stdev(end:-1:1)]';
+end
 vis.(hnamemean)(end+1) = plot(xx,mu,'k');
 hold on
 if ndps>1
