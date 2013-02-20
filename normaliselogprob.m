@@ -1,4 +1,4 @@
-% p = normaliselogprob(logp)
+% normed = normaliselogprob(logp)
 %
 % Returns the normalised probabilities of a given set of log-probabilities
 % avoiding the representation of the original probabilities to prevent
@@ -20,14 +20,27 @@
 %                   [nx, N] = size, where nx is number of variables to
 %                   normalise over and N is the number of distributions to
 %                   normalise
+%       logout  -   =1, if the normalised probabilities should also be
+%                       returned in log-space
+%                   =0, if the actual normalised probabilities should be
+%                       returned
 % out: 
-%       p       -   the vector or matrix of normalised probabilities
+%       normed  -   the vector or matrix of normalised (log) probabilities
 %                   [nx, N] = size
 % author:
 %       Sebastian Bitzer
-function p = normaliselogprob(logp)
+function normed = normaliselogprob(logp, logout)
+
+if nargin < 2
+    logout = 0;
+end
 
 mlogp = max(logp);
 logsum = bsxfun( @plus, mlogp, log( sum( exp( bsxfun(@minus, logp, mlogp) ) ) ) );
 
-p = exp( bsxfun( @minus, logp, logsum ) );
+logpnorm = bsxfun( @minus, logp, logsum );
+if logout
+    normed = logpnorm;
+else
+    normed = exp( logpnorm );
+end
