@@ -97,4 +97,6 @@ end
 
 set(vis.scatter, 'Color', scattercol)
 set(vis.lines, 'Color', linecol)
-set(vis.points, 'Color', pointcol)
+if drawpoints
+    set(vis.points, 'Color', pointcol)
+end
