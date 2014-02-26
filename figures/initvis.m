@@ -22,13 +22,13 @@ if isempty(vis)
     vis.fig = figure;
 elseif isstruct(vis) 
     if isnonemptyfield(vis,'fig')
-        figure(vis.fig)
+        set(0, 'CurrentFigure', vis.fig)
     else
         vis.fig = figure;
     end
 else
     fig = vis;
-    figure(fig);
+    set(0, 'CurrentFigure', fig);
     clear vis
     vis.fig = fig;
 end
