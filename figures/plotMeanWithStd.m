@@ -94,8 +94,10 @@ else
     shaded = false;
 end
 
-% make sure the shading is in background
+% make sure the shading is in background, but preserve the order of
+% shadings when several already exist
 if shaded
-    handles = get(gca,'Children');
-    set(gca,'Children',handles([2,3:end,1]));
+    for n= length(vis.(hnamestd)):-1:1
+        uistack(vis.(hnamestd)(n), 'bottom')
+    end
 end
