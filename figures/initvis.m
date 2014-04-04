@@ -18,7 +18,7 @@
 %                   potentially .fig added
 function vis = initvis(vis,pos)
 
-if isempty(vis)
+if nargin == 0 || isempty(vis)
     vis.fig = figure;
 elseif isstruct(vis) 
     if isnonemptyfield(vis,'fig')
