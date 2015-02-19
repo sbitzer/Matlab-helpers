@@ -27,6 +27,8 @@ X0(nans) = 0;
 
 M = sum(X0, dim) ./ N;
 
-S = bsxfun(@minus, X, M).^2;
-S(nans) = 0;
-S = sqrt( sum(S, dim) ./ (N-1) );
+if nargout > 1
+    S = bsxfun(@minus, X, M).^2;
+    S(nans) = 0;
+    S = sqrt( sum(S, dim) ./ (N-1) );
+end
