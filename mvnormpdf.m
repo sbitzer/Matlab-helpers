@@ -46,11 +46,14 @@ else
 end
 
 if logdens
-    % assuming that C is a proper positive definite covariance matrix, this
-    % may happen when there are a lot of small eigenvectors whose product
+    % assuming that C is a proper positive definite covariance matrix, Cdet
+    % may be 0 when there are a lot of small eigenvectors whose product
     % is 0 because the small size cannot be represented numerically, in
-    % this case compute the eigenvectors explicitly and sum their logs
-    if Cdet == 0
+    % this case compute the eigenvectors explicitly and sum their logs;
+    % it can also happen that Cdet becomes Inf for large matrices (remember
+    % that it is the product of all eigenvalues), then it is also better to
+    % compute logCdet directly via the logs of the eigenvalues.
+    if Cdet == 0 || isinf(Cdet)
         E = eig(C);
         logCdet = sum(log(E));
     else
